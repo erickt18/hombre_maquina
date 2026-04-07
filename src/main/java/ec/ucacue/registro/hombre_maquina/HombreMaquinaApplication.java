@@ -8,6 +8,7 @@ public class HombreMaquinaApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(HombreMaquinaApplication.class, args);
+		
+		System.out.println(" Aplicación corriendo correctamente ");
 	}
-
 }
