@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Nuevo Producto</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:           #f0f4f8;
+            --surface:      #ffffff;
+            --surface-2:    #f8fafc;
+            --border:       rgba(30,64,175,0.12);
+            --text:         #0f172a;
+            --muted:        #64748b;
+            --inv:          #ffffff;
+            --primary:      #1d4ed8;
+            --primary-hov:  #1e40af;
+            --primary-lt:   #eff6ff;
+            --primary-mid:  #bfdbfe;
+            --accent:       #0ea5e9;
+            --dark-bar:     #0f172a;
+            --r-sm: 0.375rem; --r-md: 0.5rem; --r-lg: 0.75rem; --r-xl: 1rem; --r-full: 9999px;
+            --sh-sm: 0 1px 3px rgba(30,64,175,0.07), 0 1px 2px rgba(0,0,0,0.04);
+            --sh-md: 0 4px 16px rgba(30,64,175,0.10), 0 2px 4px rgba(0,0,0,0.04);
+            --t: 160ms cubic-bezier(0.16,1,0.3,1);
+            --xs:   clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
+            --sm:   clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);
+            --base: clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
+            --lg:   clamp(1.125rem, 1rem    + 0.75vw, 1.5rem);
+            --xl:   clamp(1.5rem,   1.2rem  + 1.25vw, 2rem);
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { -webkit-font-smoothing: antialiased; }
+        body { font-family: 'Inter', system-ui, sans-serif; font-size: var(--base); color: var(--text); background: var(--bg); min-height: 100dvh; line-height: 1.6; }
+        svg { display: block; }
+        a, button { transition: color var(--t), background var(--t), box-shadow var(--t), border-color var(--t); }
+        :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: var(--r-sm); }
+
+        /* TOP BAR */
+        .top-bar { height: 4px; background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%); }
+
+        /* NAV */
+        nav { background: var(--dark-bar); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
+        .nav-inner { max-width: 1200px; margin-inline: auto; padding: 0 1.5rem; height: 58px; display: flex; align-items: center; gap: 1.5rem; }
+        .nav-logo { display: flex; align-items: center; gap: 0.5rem; font-size: var(--sm); font-weight: 700; color: #fff; text-decoration: none; letter-spacing: -0.01em; }
+        .nav-logo .logo-box { width: 30px; height: 30px; background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); border-radius: var(--r-md); display: flex; align-items: center; justify-content: center; }
+        .nav-links { display: flex; gap: 0.125rem; list-style: none; margin-left: auto; }
+        .nav-links a { font-size: var(--xs); font-weight: 500; color: rgba(255,255,255,0.65); text-decoration: none; padding: 0.4rem 0.85rem; border-radius: var(--r-md); }
+        .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+        .nav-links a.active { color: #fff; background: rgba(29,78,216,0.5); }
+
+        /* SHELL */
+        .shell { max-width: 780px; margin-inline: auto; padding: 2rem 1.5rem 4rem; }
+
+        /* BREADCRUMB */
+        .breadcrumb { display: flex; align-items: center; gap: 0.4rem; font-size: var(--xs); color: var(--muted); margin-bottom: 1.25rem; }
+        .breadcrumb a { color: var(--primary); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        /* PAGE HEADER */
+        .page-head { margin-bottom: 1.5rem; }
+        .page-head h1 { font-size: var(--xl); font-weight: 800; letter-spacing: -0.025em; line-height: 1.1; display: flex; align-items: center; gap: 0.6rem; }
+        .page-head h1 .head-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: var(--r-lg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .page-head p { font-size: var(--sm); color: var(--muted); margin-top: 0.4rem; }
+
+        /* CARD */
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl); box-shadow: var(--sh-md); overflow: hidden; }
+        .card-header { padding: 1.25rem 1.75rem; border-bottom: 1px solid var(--border); background: var(--primary-lt); display: flex; align-items: center; gap: 0.75rem; }
+        .card-header h2 { font-size: var(--lg); font-weight: 700; color: var(--primary); }
+        .card-header p  { font-size: var(--xs); color: var(--muted); }
+        .card-header-icon { width: 38px; height: 38px; background: var(--primary); border-radius: var(--r-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+        /* FORM */
+        .card-body { padding: 1.75rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+        .full { grid-column: 1 / -1; }
+        @media (max-width: 560px) { .form-grid { grid-template-columns: 1fr; } .full { grid-column: 1; } }
+
+        .field { display: flex; flex-direction: column; gap: 0.4rem; }
+        label { font-size: var(--xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+        .req { color: #dc2626; }
+
+        input[type="text"], input[type="number"], textarea {
+            font-family: inherit; font-size: var(--sm); color: var(--text);
+            background: var(--surface-2);
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 0.7rem 0.95rem;
+            width: 100%;
+            transition: border-color var(--t), box-shadow var(--t), background var(--t);
+        }
+        input::placeholder, textarea::placeholder { color: var(--muted); opacity: 0.7; }
+        input:hover, textarea:hover { border-color: rgba(29,78,216,0.35); }
+        input:focus, textarea:focus { outline: none; background: var(--surface); border-color: var(--primary); box-shadow: 0 0 0 3px rgba(29,78,216,0.14); }
+        textarea { resize: vertical; min-height: 90px; }
+        .hint { font-size: var(--xs); color: var(--muted); }
+
+        /* PRICE / STOCK INPUT with icon */
+        .input-wrap { position: relative; }
+        .input-prefix { position: absolute; left: 0.875rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: var(--sm); font-weight: 600; pointer-events: none; }
+        .has-prefix { padding-left: 1.75rem; }
+
+        /* SEPARATOR */
+        .sep { border: none; border-top: 1px solid var(--border); }
+
+        /* ACTIONS */
+        .form-actions { padding: 1.25rem 1.75rem; border-top: 1px solid var(--border); background: var(--surface-2); display: flex; flex-direction: column; gap: 0.75rem; }
+
+        .btn-submit {
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
+            color: #fff; font-family: inherit; font-size: var(--sm); font-weight: 700;
+            padding: 0.8rem 1.5rem; border-radius: var(--r-lg);
+            border: none; cursor: pointer; width: 100%;
+            box-shadow: 0 2px 8px rgba(29,78,216,0.35);
+        }
+        .btn-submit:hover { background: linear-gradient(135deg, var(--primary-hov) 0%, #1e3a8a 100%); box-shadow: 0 4px 16px rgba(29,78,216,0.45); transform: translateY(-1px); }
+        .btn-submit:active { transform: translateY(0); }
+
+        .btn-back {
+            display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+            background: transparent; color: var(--muted);
+            font-family: inherit; font-size: var(--sm); font-weight: 600;
+            padding: 0.7rem 1.5rem; border-radius: var(--r-lg);
+            border: 1.5px solid var(--border); cursor: pointer;
+            text-decoration: none; width: 100%;
+        }
+        .btn-back:hover { background: var(--bg); color: var(--text); border-color: rgba(29,78,216,0.25); }
+    </style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+
+<nav aria-label="Navegación principal">
+    <div class="nav-inner">
+        <a th:href="@{/productos}" href="/productos" class="nav-logo">
+            <div class="logo-box" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+                    <rect x="2" y="7" width="20" height="14" rx="2"/>
+                    <path d="M16 3H8l-2 4h12l-2-4z"/>
+                </svg>
+            </div>
+            InventarioPro
+        </a>
+        <ul class="nav-links" role="list">
+            <li><a th:href="@{/productos}" href="/productos" class="active">Productos</a></li>
+            <li><a th:href="@{/categorias}" href="/categorias">Categorías</a></li>
+            <li><a th:href="@{/reportes}" href="/reportes">Reportes</a></li>
+        </ul>
+    </div>
+</nav>
+
+<main class="shell" id="main-content">
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Migas de pan">
+        <a th:href="@{/productos}" href="/productos">Productos</a>
+        <span aria-hidden="true">/</span>
+        <span th:text="${titulo}">Nuevo Producto</span>
+    </nav>
+
+    <!-- Page header -->
+    <div class="page-head">
+        <h1>
+            <span class="head-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+            </span>
+            <span th:text="${titulo}">Nuevo Producto</span>
+        </h1>
+        <p>Completa los datos para agregar el producto al inventario</p>
+    </div>
+
+    <div class="card">
+
+        <!-- Card header -->
+        <div class="card-header">
+            <div class="card-header-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                    <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8l-2 4h12l-2-4z"/>
+                </svg>
+            </div>
+            <div>
+                <h2>Información del producto</h2>
+                <p>Nombre, descripción, precio y stock disponible</p>
+            </div>
+        </div>
+
+        <!--
+            CONTROLLER: @GetMapping("/guardar") → method="get" ✅
+            Si cambias a @PostMapping, cambia también method="post"
+        -->
+        <form id="frmProducto"
+              th:action="@{/productos/guardar}"
+              th:object="${producto}"
+              method="get">
+
+            <div class="card-body">
+                <div class="form-grid">
+
+                    <div class="field full">
+                        <label for="nombre">Nombre <span class="req" aria-hidden="true">*</span></label>
+                        <input type="text"
+                               id="nombre"
+                               th:field="*{nombre}"
+                               placeholder="Ej. Laptop HP ProBook 450 G9"
+                               required
+                               autocomplete="off">
+                    </div>
+
+                    <div class="field full">
+                        <label for="descripcion">Descripción</label>
+                        <textarea id="descripcion"
+                                  th:field="*{descripcion}"
+                                  placeholder="Describe brevemente el producto…"></textarea>
+                        <span class="hint">Opcional — facilita la búsqueda del producto.</span>
+                    </div>
+
+                    <hr class="sep full">
+
+                    <div class="field">
+                        <label for="precio">Precio (USD) <span class="req" aria-hidden="true">*</span></label>
+                        <div class="input-wrap">
+                            <span class="input-prefix" aria-hidden="true">$</span>
+                            <input type="number"
+                                   id="precio"
+                                   th:field="*{precio}"
+                                   class="has-prefix"
+                                   step="0.01"
+                                   min="0"
+                                   placeholder="0.00"
+                                   required>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="stock">Stock inicial <span class="req" aria-hidden="true">*</span></label>
+                        <input type="number"
+                               id="stock"
+                               th:field="*{stock}"
+                               min="0"
+                               placeholder="0"
+                               required>
+                        <span class="hint">Unidades disponibles en almacén.</span>
+                    </div>
+
+                </div>
+            </div>
+
+        </form><!-- form se cierra ANTES de los botones -->
+
+        <!-- ACCIONES — el submit usa form="frmProducto", el Volver es un enlace libre -->
+        <div class="form-actions">
+            <button type="submit" form="frmProducto" class="btn-submit">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Guardar producto
+            </button>
+
+            <a th:href="@{/productos}" href="/productos" class="btn-back">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+                Volver al listado
+            </a>
+        </div>
+
+    </div><!-- /card -->
+
+</main>
+</body>
+</html>

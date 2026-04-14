@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Listado de Productos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:           #f0f4f8;
+            --surface:      #ffffff;
+            --surface-2:    #f8fafc;
+            --border:       rgba(30,64,175,0.12);
+            --text:         #0f172a;
+            --muted:        #64748b;
+            --inv:          #ffffff;
+            --primary:      #1d4ed8;
+            --primary-hov:  #1e40af;
+            --primary-lt:   #eff6ff;
+            --primary-mid:  #bfdbfe;
+            --accent:       #0ea5e9;
+            --dark-bar:     #0f172a;
+            --success-bg:   #f0fdf4;
+            --success-text: #166534;
+            --warn-bg:      #fffbeb;
+            --warn-text:    #92400e;
+            --danger-bg:    #fef2f2;
+            --danger-text:  #991b1b;
+            --r-sm: 0.375rem;
+            --r-md: 0.5rem;
+            --r-lg: 0.75rem;
+            --r-xl: 1rem;
+            --r-full: 9999px;
+            --sh-sm: 0 1px 3px rgba(30,64,175,0.07), 0 1px 2px rgba(0,0,0,0.04);
+            --sh-md: 0 4px 16px rgba(30,64,175,0.10), 0 2px 4px rgba(0,0,0,0.04);
+            --t: 160ms cubic-bezier(0.16,1,0.3,1);
+            --xs:   clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
+            --sm:   clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);
+            --base: clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
+            --lg:   clamp(1.125rem, 1rem    + 0.75vw, 1.5rem);
+            --xl:   clamp(1.5rem,   1.2rem  + 1.25vw, 2rem);
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+        body { font-family: 'Inter', system-ui, sans-serif; font-size: var(--base); color: var(--text); background: var(--bg); min-height: 100dvh; line-height: 1.6; }
+        svg { display: block; }
+        a, button { transition: color var(--t), background var(--t), box-shadow var(--t), border-color var(--t), opacity var(--t); }
+        :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: var(--r-sm); }
+
+        /* TOP BAR */
+        .top-bar {
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+        }
+
+        /* NAV */
+        nav {
+            background: var(--dark-bar);
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+        }
+        .nav-inner {
+            max-width: 1200px; margin-inline: auto;
+            padding: 0 1.5rem; height: 58px;
+            display: flex; align-items: center; gap: 1.5rem;
+        }
+        .nav-logo {
+            display: flex; align-items: center; gap: 0.5rem;
+            font-size: var(--sm); font-weight: 700; color: #fff;
+            text-decoration: none; letter-spacing: -0.01em;
+        }
+        .nav-logo .logo-box {
+            width: 30px; height: 30px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: var(--r-md);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .nav-links { display: flex; gap: 0.125rem; list-style: none; margin-left: auto; }
+        .nav-links a {
+            font-size: var(--xs); font-weight: 500; color: rgba(255,255,255,0.65);
+            text-decoration: none; padding: 0.4rem 0.85rem; border-radius: var(--r-md);
+        }
+        .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+        .nav-links a.active { color: #fff; background: rgba(29,78,216,0.5); }
+
+        /* SHELL */
+        .shell { max-width: 1200px; margin-inline: auto; padding: 2rem 1.5rem 4rem; }
+
+        /* HERO STRIP */
+        .hero-strip {
+            background: linear-gradient(135deg, var(--primary) 0%, #1e3a8a 60%, #0369a1 100%);
+            border-radius: var(--r-xl);
+            padding: 1.75rem 2rem;
+            margin-bottom: 1.75rem;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 1rem;
+            box-shadow: var(--sh-md);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-strip::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at 80% 50%, rgba(14,165,233,0.25) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero-strip h1 { font-size: var(--xl); font-weight: 800; color: #fff; letter-spacing: -0.025em; line-height: 1.1; }
+        .hero-strip p  { font-size: var(--sm); color: rgba(255,255,255,0.75); margin-top: 0.25rem; }
+        .btn-new {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            background: #fff; color: var(--primary);
+            font-size: var(--sm); font-weight: 700;
+            padding: 0.65rem 1.3rem; border-radius: var(--r-full);
+            text-decoration: none; border: none; cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            white-space: nowrap; position: relative; z-index: 1;
+        }
+        .btn-new:hover { background: var(--primary-lt); box-shadow: 0 4px 16px rgba(0,0,0,0.2); transform: translateY(-1px); }
+
+        /* STATS ROW */
+        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--r-lg); padding: 1.1rem 1.25rem;
+            box-shadow: var(--sh-sm);
+            display: flex; align-items: center; gap: 0.875rem;
+        }
+        .stat-icon {
+            width: 42px; height: 42px; border-radius: var(--r-md); flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .stat-icon.blue   { background: var(--primary-lt);   color: var(--primary); }
+        .stat-icon.sky    { background: #f0f9ff; color: var(--accent); }
+        .stat-icon.indigo { background: #eef2ff; color: #4f46e5; }
+        .stat-label { font-size: var(--xs); color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+        .stat-val   { font-size: var(--lg); font-weight: 800; color: var(--text); line-height: 1.1; font-variant-numeric: tabular-nums; }
+
+        /* CARD */
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl); box-shadow: var(--sh-sm); overflow: hidden; }
+
+        /* TOOLBAR */
+        .toolbar {
+            padding: 0.875rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 1rem; flex-wrap: wrap;
+            background: var(--surface-2);
+        }
+        .toolbar-title { font-size: var(--sm); font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 0.5rem; }
+        .toolbar-title .dot { width: 8px; height: 8px; background: var(--primary); border-radius: var(--r-full); }
+        .search-wrap { position: relative; display: flex; align-items: center; }
+        .search-wrap svg { position: absolute; left: 0.7rem; color: var(--muted); pointer-events: none; }
+        .search-wrap input {
+            font-family: inherit; font-size: var(--xs); color: var(--text);
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--r-full); padding: 0.45rem 0.875rem 0.45rem 2.1rem;
+            width: 200px;
+        }
+        .search-wrap input::placeholder { color: var(--muted); }
+        .search-wrap input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(29,78,216,0.12); }
+
+        /* TABLE */
+        .tbl-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: var(--sm); }
+        thead tr { border-bottom: 2px solid var(--primary-mid); background: var(--primary-lt); }
+        th {
+            padding: 0.75rem 1.25rem; text-align: left;
+            font-size: var(--xs); font-weight: 700; color: var(--primary);
+            text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap;
+        }
+        td { padding: 0.9rem 1.25rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr { transition: background var(--t); }
+        tbody tr:hover { background: var(--primary-lt); }
+
+        .id-cell   { font-size: var(--xs); color: var(--muted); font-variant-numeric: tabular-nums; font-weight: 600; }
+        .name-cell { font-weight: 700; color: var(--text); }
+        .desc-cell { color: var(--muted); max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .price-cell { font-weight: 700; color: var(--primary); font-variant-numeric: tabular-nums; }
+
+        /* BADGES */
+        .badge { display: inline-flex; align-items: center; padding: 0.2rem 0.65rem; border-radius: var(--r-full); font-size: var(--xs); font-weight: 700; white-space: nowrap; }
+        .badge-ok   { background: var(--success-bg); color: var(--success-text); }
+        .badge-low  { background: var(--warn-bg);    color: var(--warn-text); }
+        .badge-out  { background: var(--danger-bg);  color: var(--danger-text); }
+
+        /* EMPTY STATE */
+        .empty {
+            padding: 4rem 2rem; text-align: center; color: var(--muted);
+            display: flex; flex-direction: column; align-items: center; gap: 1rem;
+        }
+        .empty-icon { width: 56px; height: 56px; background: var(--primary-lt); border-radius: var(--r-xl); display: flex; align-items: center; justify-content: center; color: var(--primary); }
+        .empty h3 { font-size: var(--lg); font-weight: 700; color: var(--text); }
+        .empty p  { font-size: var(--sm); max-width: 32ch; }
+
+        /* TABLE FOOTER */
+        .tbl-foot {
+            padding: 0.75rem 1.25rem; border-top: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--surface-2); flex-wrap: wrap; gap: 0.5rem;
+        }
+        .tbl-foot span { font-size: var(--xs); color: var(--muted); }
+        .btn-add-small {
+            display: inline-flex; align-items: center; gap: 0.3rem;
+            font-size: var(--xs); font-weight: 600; color: var(--primary);
+            text-decoration: none; padding: 0.35rem 0.75rem;
+            border: 1px solid var(--primary-mid); border-radius: var(--r-full);
+            background: var(--primary-lt);
+        }
+        .btn-add-small:hover { background: var(--primary-mid); }
+
+        @media (max-width: 640px) {
+            .stats-row { grid-template-columns: 1fr; }
+            .hero-strip { flex-direction: column; align-items: flex-start; }
+            th, td { padding: 0.65rem 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+
+<nav aria-label="Navegación principal">
+    <div class="nav-inner">
+        <a th:href="@{/productos}" href="/productos" class="nav-logo">
+            <div class="logo-box" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+                    <rect x="2" y="7" width="20" height="14" rx="2"/>
+                    <path d="M16 3H8l-2 4h12l-2-4z"/>
+                </svg>
+            </div>
+            InventarioPro
+        </a>
+        <ul class="nav-links" role="list">
+            <li><a th:href="@{/productos}" href="/productos" class="active">Productos</a></li>
+            <li><a th:href="@{/categorias}" href="/categorias">Categorías</a></li>
+            <li><a th:href="@{/reportes}" href="/reportes">Reportes</a></li>
+        </ul>
+    </div>
+</nav>
+
+<main class="shell" id="main-content">
+
+    <!-- HERO STRIP -->
+    <div class="hero-strip">
+        <div>
+            <h1 th:text="${titulo}">Listado de Productos</h1>
+            <p>Gestiona el inventario de tu almacén en tiempo real</p>
+        </div>
+        <a th:href="@{/productos/nuevo}" href="/productos/nuevo" class="btn-new">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Nuevo Producto
+        </a>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row" aria-label="Resumen de inventario">
+        <div class="stat-card">
+            <div class="stat-icon blue" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8l-2 4h12l-2-4z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="stat-label">Total productos</div>
+                <div class="stat-val" th:text="${productos != null ? productos.size() : 0}">0</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon sky" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+            </div>
+            <div>
+                <div class="stat-label">En stock</div>
+                <div class="stat-val">—</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon indigo" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+            </div>
+            <div>
+                <div class="stat-label">Stock bajo</div>
+                <div class="stat-val">—</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLE CARD -->
+    <div class="card">
+        <div class="toolbar">
+            <div class="toolbar-title">
+                <span class="dot" aria-hidden="true"></span>
+                Inventario actual
+            </div>
+            <div class="search-wrap">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="search" placeholder="Buscar producto…" aria-label="Buscar producto" id="searchInput">
+            </div>
+        </div>
+
+        <div class="tbl-wrap" role="region" aria-label="Tabla de productos" tabindex="0">
+            <table id="productTable">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Descripción</th>
+                        <th scope="col">Precio</th>
+                        <th scope="col">Stock</th>
+                        <th scope="col">Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Filas con datos reales -->
+                    <tr th:each="producto : ${productos}">
+                        <td class="id-cell" th:text="'#' + ${producto.id}">—</td>
+                        <td class="name-cell" th:text="${producto.nombre}">—</td>
+                        <td class="desc-cell" th:text="${producto.descripcion}">—</td>
+                        <td class="price-cell" th:text="'$' + ${producto.precio}">—</td>
+                        <td th:text="${producto.stock}">—</td>
+                        <td>
+                            <span th:if="${producto.stock > 10}"  class="badge badge-ok">✓ Disponible</span>
+                            <span th:if="${producto.stock > 0 and producto.stock <= 10}" class="badge badge-low">⚠ Stock bajo</span>
+                            <span th:if="${producto.stock == 0}"  class="badge badge-out">✕ Sin stock</span>
+                        </td>
+                    </tr>
+                    <!-- Estado vacío si no hay productos -->
+                    <tr th:if="${productos == null or productos.isEmpty()}">
+                        <td colspan="6" style="padding:0; border:none;">
+                            <div class="empty">
+                                <div class="empty-icon" aria-hidden="true">
+                                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8l-2 4h12l-2-4z"/>
+                                    </svg>
+                                </div>
+                                <h3>Sin productos aún</h3>
+                                <p>Agrega tu primer producto para empezar a gestionar tu inventario.</p>
+                                <a th:href="@{/productos/nuevo}" href="/productos/nuevo" class="btn-new" style="margin-top:0.25rem;">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                    Nuevo Producto
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tbl-foot">
+            <span th:text="'Total: ' + (${productos != null ? productos.size() : 0}) + ' productos'">Total: 0 productos</span>
+            <a th:href="@{/productos/nuevo}" href="/productos/nuevo" class="btn-add-small">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Agregar
+            </a>
+        </div>
+    </div>
+
+</main>
+
+<script>
+    // Búsqueda en tiempo real (lado cliente, sin recargar)
+    document.getElementById('searchInput').addEventListener('input', function () {
+        const q = this.value.toLowerCase();
+        document.querySelectorAll('#productTable tbody tr').forEach(function (row) {
+            if (row.querySelector('.empty')) return;
+            row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+    });
+</script>
+</body>
+</html>
